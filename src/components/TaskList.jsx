@@ -20,11 +20,11 @@ function TaskList({ tasks, editTask, deleteTask, toggleTaskCompletion }) {
   };
 
   return (
-    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-24 lg:pb-0">
       {tasks.map((task) => (
         <li
           key={task.id}
-          className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col space-y-4 transition-colors duration-300 border border-gray-200 dark:border-gray-700"
+          className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col transition-colors duration-300 border border-gray-200 dark:border-gray-700"
         >
           {editingId === task.id ? (
             <div className="flex flex-col space-y-2">
@@ -42,21 +42,21 @@ function TaskList({ tasks, editTask, deleteTask, toggleTaskCompletion }) {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col space-y-6">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col h-full">
+              <div className="flex items-start space-x-4">
                 <input
                   type="checkbox"
                   checked={task.completed}
                   onChange={() => toggleTaskCompletion(task.id)}
-                  className="h-6 w-6 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600"
+                  className="h-5 w-5 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 mt-1 flex-shrink-0"
                 />
                 <span
-                  className={`flex-1 text-lg ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}
+                  className={`text-lg ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}
                 >
                   {task.text}
                 </span>
               </div>
-              <div className="flex space-x-4 justify-end">
+              <div className="flex space-x-4 justify-end mt-auto pt-4">
                 <button
                   onClick={() => startEditing(task)}
                   className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200"

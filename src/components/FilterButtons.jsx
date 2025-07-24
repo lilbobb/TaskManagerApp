@@ -5,7 +5,6 @@ function FilterButtons({ setFilter, activeFilter }) {
 
   return (
     <div className="mb-4">
-      {/* Mobile Layout - Horizontal Row */}
       <div className="flex lg:hidden space-x-2">
         {filters.map((filter) => (
           <button

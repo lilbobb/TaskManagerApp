@@ -8,23 +8,20 @@ import "./index.css";
 
 function App() {
   const [tasks, setTasks] = useState(() => {
-    // Load tasks from localStorage on initial render
     const savedTasks = localStorage.getItem("tasks");
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
-  
+
   const [filter, setFilter] = useState("all");
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     return savedTheme || "light";
   });
 
-  // Save tasks to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  // Handle theme changes
   useEffect(() => {
     document.documentElement.className = theme;
     localStorage.setItem("theme", theme);
@@ -35,7 +32,6 @@ function App() {
     }
   }, [theme]);
 
-  // Rest of your functions remain exactly the same
   const addTask = (text) => {
     const newTask = {
       id: crypto.randomUUID(),
@@ -69,19 +65,26 @@ function App() {
     return true;
   });
 
-  return (
+   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-7xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Task Manager</h1>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </div>
-        
-        {/* Desktop Layout */}
-        <div className="hidden lg:flex lg:flex-row gap-6">
-          <div className="lg:w-1/4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md h-[80vh] overflow-y-auto transition-colors duration-300">
-            <TaskForm addTask={addTask} />
+        <div className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-900 pt-6 pb-4 -mx-6 px-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-3xl font-bold">Task Manager</h1>
+            <ThemeToggle theme={theme} setTheme={setTheme} />
+          </div>
+          
+          <div className="lg:hidden sticky top-20 z-10 bg-gray-100 dark:bg-gray-900 pb-2 -mx-6 px-6">
             <FilterButtons setFilter={setFilter} activeFilter={filter} />
+          </div>
+        </div>
+
+        <div className="hidden lg:flex lg:flex-row gap-6">
+          <div className="lg:w-1/4 sticky top-28 h-[calc(100vh-9rem)]">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md h-full overflow-y-auto transition-colors duration-300">
+              <TaskForm addTask={addTask} />
+              <FilterButtons setFilter={setFilter} activeFilter={filter} />
+            </div>
           </div>
           <div className="lg:w-3/4">
             <TaskList
@@ -93,11 +96,9 @@ function App() {
           </div>
         </div>
 
-        {/* Mobile Layout */}
-        <div className="flex flex-col min-h-[calc(100vh-120px)] lg:hidden">
-          <div className="flex-1 flex flex-col">
-            <FilterButtons setFilter={setFilter} activeFilter={filter} />
-            <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col lg:hidden">
+          <div className="flex-1 pt-2">
+            <div className="px-2">
               <TaskList
                 tasks={filteredTasks}
                 editTask={editTask}
@@ -106,7 +107,7 @@ function App() {
               />
             </div>
           </div>
-          <div className="sticky bottom-0 bg-white dark:bg-gray-900 p-4 transition-colors duration-300">
+          <div className="sticky bottom-0 p-4 bg-transparent">
             <TaskForm addTask={addTask} />
           </div>
         </div>
