@@ -1,26 +1,17 @@
-import React from 'react';
-import { useState } from 'react';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
+// TaskList.js
+import React, { useState, memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import TaskItem from "./TaskItem";
 
-const taskVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.3 }
-  },
-  exit: { opacity: 0, x: -50 }
-};
-
-const iconVariants = {
-  hover: { scale: 1.2 },
-  tap: { scale: 0.9 }
-};
-
-function TaskList({ tasks, editTask, deleteTask, toggleTaskCompletion }) {
+const TaskList = memo(({ 
+  tasks, 
+  editTask, 
+  deleteTask, 
+  toggleTaskCompletion, 
+  isLoading 
+}) => {
   const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState('');
+  const [editText, setEditText] = useState("");
 
   const startEditing = (task) => {
     setEditingId(task.id);
@@ -31,87 +22,48 @@ function TaskList({ tasks, editTask, deleteTask, toggleTaskCompletion }) {
     if (editText.trim()) {
       editTask(id, editText);
       setEditingId(null);
-      setEditText('');
+      setEditText("");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-24 lg:pb-0">
+        {[...Array(4)].map((_, i) => (
+          <div 
+            key={i} 
+            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col space-y-4 animate-pulse"
+          >
+            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div className="flex justify-end space-x-4">
+              <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+              <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-24 lg:pb-0">
       <AnimatePresence>
         {tasks.map((task) => (
-          <motion.li
+          <TaskItem
             key={task.id}
-            layout
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={taskVariants}
-            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col transition-colors duration-300 border border-gray-200 dark:border-gray-700"
-          >
-            {editingId === task.id ? (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col space-y-2"
-              >
-                <input
-                  type="text"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  className="p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
-                />
-                <button
-                  onClick={() => handleEditSubmit(task.id)}
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm"
-                >
-                  Save
-                </button>
-              </motion.div>
-            ) : (
-              <div className="flex flex-col h-full">
-                <div className="flex items-start space-x-4">
-                  <motion.input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => toggleTaskCompletion(task.id)}
-                    whileTap={{ scale: 0.9 }}
-                    className="h-5 w-5 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 mt-1 flex-shrink-0"
-                  />
-                  <span
-                    className={`text-lg ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}
-                  >
-                    {task.text}
-                  </span>
-                </div>
-                <div className="flex space-x-4 justify-end mt-auto pt-4">
-                  <motion.button
-                    onClick={() => startEditing(task)}
-                    variants={iconVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200"
-                    aria-label="Edit task"
-                  >
-                    <FiEdit2 size={18} />
-                  </motion.button>
-                  <motion.button
-                    onClick={() => deleteTask(task.id)}
-                    variants={iconVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
-                    aria-label="Delete task"
-                  >
-                    <FiTrash2 size={18} />
-                  </motion.button>
-                </div>
-              </div>
-            )}
-          </motion.li>
+            task={task}
+            editingId={editingId}
+            editText={editText}
+            setEditText={setEditText}
+            handleEditSubmit={handleEditSubmit}
+            startEditing={startEditing}
+            toggleTaskCompletion={toggleTaskCompletion}
+            deleteTask={deleteTask}
+          />
         ))}
       </AnimatePresence>
     </ul>
   );
-}
+});
 
 export default TaskList;
