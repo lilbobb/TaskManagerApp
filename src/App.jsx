@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { FiCheckSquare } from "react-icons/fi";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import FilterButtons from "./components/FilterButtons";
@@ -65,15 +66,20 @@ function App() {
     return true;
   });
 
-   return (
+  return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-7xl mx-auto p-6">
         <div className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-900 pt-6 pb-4 -mx-6 px-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold">Task Manager</h1>
+          <div className="flex justify-between items-center mb-10">
+            <div className="flex items-center space-x-3">
+              <FiCheckSquare className="text-green-500 text-3xl" />
+              <h1 className="text-3xl font-bold text-green-600 dark:text-green-400">
+                Task Manager
+              </h1>
+            </div>
             <ThemeToggle theme={theme} setTheme={setTheme} />
           </div>
-          
+
           <div className="lg:hidden sticky top-20 z-10 bg-gray-100 dark:bg-gray-900 pb-2 -mx-6 px-6">
             <FilterButtons setFilter={setFilter} activeFilter={filter} />
           </div>
