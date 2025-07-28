@@ -1,12 +1,70 @@
-# React + Vite
+# Task Manager App ✅
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A sleek, responsive task management application built with React and Tailwind CSS. Features dark mode, local storage persistence, and smooth animations with Framer Motion.   
 
-Currently, two official plugins are available:
+## ✨ Features  
+- **CRUD Operations**: Add, edit, delete, and mark tasks as complete.  
+- **Persistent Storage**: Tasks saved in `localStorage` (survives page refresh).  
+- **Dark/Light Mode**: Toggleable theme with Tailwind CSS.  
+- **Filtering**: Sort tasks by "All", "Active", or "Completed".  
+- **Animations**: Fluid UI transitions with Framer Motion.  
+- **Mobile-First**: Fully responsive design.  
+- **Accessible**: Keyboard-friendly with ARIA labels.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Tech Stack  
+- **Frontend**: React 18 + Vite  
+- **Styling**: Tailwind CSS  
+- **Animations**: Framer Motion  
+- **State Management**: React Hooks (`useState`, `useEffect`)  
+- **Build Tool**: Vite  
+- **Deployment**: Vercel  
 
-## Expanding the ESLint configuration
+## 🚀 Quick Start  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repo**  
+   ```bash
+   git clone https://github.com/lilbobb/task-manager.git
+   cd task-manager
+Install dependencies
+
+bash
+npm install
+Run locally
+
+bash
+npm run dev
+Open http://localhost:5173 in your browser.
+
+Build for production
+
+bash
+npm run build
+📂 Project Structure
+plaintext
+/src
+├── components/          # Reusable UI components
+│   ├── TaskForm.jsx     # Task input form
+│   ├── TaskList.jsx     # Task display and actions
+│   ├── TaskItem.jsx     
+│   └── FilterButtons.jsx # Filter controls
+├── App.jsx              # Root component
+├── main.jsx             # Entry point
+└── styles/              # Global styles (if any)
+
+🌐 Live Demo
+Hosted on Vercel: https://task-manager-app.vercel.app
+
+🤝 Contributing
+PRs and issues welcome! Follow these steps:
+
+Fork the project.
+
+Create a branch (git checkout -b feature/your-feature).
+
+Commit changes (git commit -m 'Add some feature').
+
+Push to the branch (git push origin feature/your-feature).
+
+Open a PR.
+
+📜 License
