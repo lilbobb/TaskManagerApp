@@ -39,17 +39,7 @@ Build for production
 
 bash
 npm run build
-📂 Project Structure
-plaintext
-/src
-├── components/          # Reusable UI components
-│   ├── TaskForm.jsx     # Task input form
-│   ├── TaskList.jsx     # Task display and actions
-│   ├── TaskItem.jsx     
-│   └── FilterButtons.jsx # Filter controls
-├── App.jsx              # Root component
-├── main.jsx             # Entry point
-└── styles/              # Global styles (if any)
+
 
 🌐 Live Demo
 Hosted on Vercel: https://task-manager-app.vercel.app
