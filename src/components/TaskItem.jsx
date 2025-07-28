@@ -57,7 +57,7 @@ const TaskItem = memo(({
               checked={task.completed}
               onChange={() => toggleTaskCompletion(task.id)}
               whileTap={{ scale: 0.9 }}
-              className="h-5 w-5 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 mt-1 flex-shrink-0 cursor-pointer"
+              className="h-5 w-5 text-green-500 rounded focus:ring-green-500 dark:focus:ring-green-600 mt-1 flex-shrink-0 cursor-pointer"
             />
             <span
               id={`task-${task.id}`}
