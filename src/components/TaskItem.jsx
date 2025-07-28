@@ -1,4 +1,3 @@
-// TaskItem.js
 import React, { memo } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { motion } from "framer-motion";
@@ -44,7 +43,7 @@ const TaskItem = memo(({
           />
           <button
             onClick={() => handleEditSubmit(task.id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm"
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm cursor-pointer"
           >
             Save
           </button>
@@ -58,7 +57,7 @@ const TaskItem = memo(({
               checked={task.completed}
               onChange={() => toggleTaskCompletion(task.id)}
               whileTap={{ scale: 0.9 }}
-              className="h-5 w-5 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 mt-1 flex-shrink-0"
+              className="h-5 w-5 text-blue-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 mt-1 flex-shrink-0 cursor-pointer"
             />
             <span
               id={`task-${task.id}`}
@@ -77,7 +76,7 @@ const TaskItem = memo(({
               variants={iconVariants}
               whileHover="hover"
               whileTap="tap"
-              className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200 cursor-pointer"
               aria-label="Edit task"
             >
               <FiEdit2 size={18} />
@@ -87,7 +86,7 @@ const TaskItem = memo(({
               variants={iconVariants}
               whileHover="hover"
               whileTap="tap"
-              className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200 cursor-pointer"
               aria-label="Delete task"
             >
               <FiTrash2 size={18} />

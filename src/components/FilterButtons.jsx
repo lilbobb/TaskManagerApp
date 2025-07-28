@@ -20,7 +20,7 @@ function FilterButtons({ setFilter, activeFilter }) {
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            className={`flex-1 px-3 py-3 rounded-lg capitalize text-sm font-medium text-center transition-colors duration-200 ${
+            className={`flex-1 px-3 py-3 rounded-lg capitalize text-sm font-medium text-center transition-colors duration-200 cursor-pointer ${
               activeFilter === filter
                 ? "bg-green-500 text-white"
                 : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -40,7 +40,7 @@ function FilterButtons({ setFilter, activeFilter }) {
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            className={`w-full px-3 py-3 rounded-lg capitalize text-sm font-medium text-left transition-colors duration-200 ${
+            className={`w-full px-3 py-3 rounded-lg capitalize text-sm font-medium text-left transition-colors duration-200 cursor-pointer ${
               activeFilter === filter
                 ? "bg-green-500 text-white"
                 : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"

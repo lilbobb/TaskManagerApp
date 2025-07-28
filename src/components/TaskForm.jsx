@@ -56,7 +56,7 @@ function TaskForm({ addTask }) {
             type="submit"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center"
+            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
             aria-label="Add task"
           >
             <FiPlus size={20} />
