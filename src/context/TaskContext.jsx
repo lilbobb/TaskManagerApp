@@ -15,18 +15,20 @@ export const TaskProvider = ({ children }) => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  const addTask = (text) => {
+  const addTask = (text, dueDate = null) => { 
+    if (!text) return; 
     const newTask = {
       id: crypto.randomUUID(),
       text,
       completed: false,
+      dueDate, 
     };
     setTasks([...tasks, newTask]);
   };
 
-  const editTask = (id, newText) => {
+  const editTask = (id, newText, newDueDate = null) => {
     setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, text: newText } : task))
+      tasks.map((task) => (task.id === id ? { ...task, text: newText, dueDate: newDueDate } : task))
     );
     setEditingId(null);
     setEditText("");

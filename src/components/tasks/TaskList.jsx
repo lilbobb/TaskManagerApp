@@ -1,10 +1,10 @@
-// src/components/tasks/TaskList.jsx
 import React, { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TaskItem from "./TaskItem";
+import EmptyState from "./EmptyState";
 import { useTasks } from "../../context/TaskContext";
 
-const TaskList = memo(({ isLoading }) => {
+const TaskList = memo(({ isLoading, onShowForm }) => {
   const { tasks } = useTasks();
 
   if (isLoading) {
@@ -15,6 +15,10 @@ const TaskList = memo(({ isLoading }) => {
         ))}
       </div>
     );
+  }
+
+  if (tasks.length === 0) {
+    return <EmptyState onAddClick={onShowForm} />;
   }
 
   return (

@@ -1,6 +1,5 @@
-// src/components/tasks/TaskItem.jsx
 import React, { memo, useState } from "react";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiCalendar } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useTasks } from "../../context/TaskContext";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
@@ -15,8 +14,8 @@ const TaskItem = memo(({ task, isLoading }) => {
     toggleTaskCompletion,
     deleteTask,
   } = useTasks();
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editDueDate, setEditDueDate] = useState(task.dueDate || "");
   const editInputRef = React.useRef(null);
 
   const iconVariants = {
@@ -79,12 +78,23 @@ const TaskItem = memo(({ task, isLoading }) => {
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && editTask(task.id, editText)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  editTask(task.id, editText, editDueDate || null);
+                }
+              }}
               className="p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
             />
+            <input
+              type="date"
+              value={editDueDate}
+              onChange={(e) => setEditDueDate(e.target.value)}
+              className="p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
+              min={new Date().toISOString().split("T")[0]}
+            />
             <button
-              onClick={() => editTask(task.id, editText)}
-              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm cursor-pointer"
+              onClick={() => editTask(task.id, editText, editDueDate || null)}
+              className="w-1/3 self-start px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm cursor-pointer"
             >
               Save
             </button>
@@ -111,6 +121,21 @@ const TaskItem = memo(({ task, isLoading }) => {
                 }`}
               >
                 {task.text}
+                {task.dueDate && (
+                  <span
+                    className={`block text-sm mt-1 ${
+                      new Date(task.dueDate) < new Date() && !task.completed
+                        ? "text-red-500 dark:text-red-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  >
+                    <FiCalendar className="inline mr-1" />
+                    {new Date(task.dueDate).toLocaleDateString()}
+                    {new Date(task.dueDate) < new Date() && !task.completed && (
+                      <span className="ml-1 text-xs">(Overdue)</span>
+                    )}
+                  </span>
+                )}
               </span>
             </div>
             <div className="flex space-x-4 justify-end mt-auto pt-4">
