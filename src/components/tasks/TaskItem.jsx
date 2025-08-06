@@ -1,21 +1,46 @@
+// src/components/tasks/TaskItem.jsx
 import React, { memo } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useTasks } from "../../context/TaskContext";
+import { useConfirm } from "../../hooks/useConfirm";
 
-const TaskItem = memo(({ 
-  task, 
-  editingId, 
-  editText, 
-  setEditText,
-  handleEditSubmit, 
-  startEditing, 
-  toggleTaskCompletion, 
-  deleteTask 
-}) => {
+const TaskItem = memo(({ task, isLoading }) => {
+  const {
+    editingId,
+    editText,
+    setEditText,
+    editTask,
+    startEditing,
+    toggleTaskCompletion,
+    deleteTask,
+  } = useTasks();
+
+  const { getConfirmation } = useConfirm();
+  const editInputRef = React.useRef(null);
+
   const iconVariants = {
     hover: { scale: 1.2 },
     tap: { scale: 0.9 },
   };
+
+  React.useEffect(() => {
+    if (editingId === task.id && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editingId, task.id]);
+
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col space-y-4 animate-pulse">
+        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+        <div className="flex justify-end space-x-4">
+          <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+          <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.li
@@ -36,13 +61,15 @@ const TaskItem = memo(({
           className="flex flex-col space-y-2"
         >
           <input
+            ref={editInputRef}
             type="text"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && editTask(task.id, editText)}
             className="p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
           />
           <button
-            onClick={() => handleEditSubmit(task.id)}
+            onClick={() => editTask(task.id, editText)}
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm cursor-pointer"
           >
             Save
@@ -52,7 +79,9 @@ const TaskItem = memo(({
         <div className="flex flex-col h-full">
           <div className="flex items-start space-x-4">
             <motion.input
-              aria-label={task.completed ? 'Mark task incomplete' : 'Mark task complete'}
+              aria-label={
+                task.completed ? "Mark task incomplete" : "Mark task complete"
+              }
               type="checkbox"
               checked={task.completed}
               onChange={() => toggleTaskCompletion(task.id)}
@@ -82,7 +111,10 @@ const TaskItem = memo(({
               <FiEdit2 size={18} />
             </motion.button>
             <motion.button
-              onClick={() => deleteTask(task.id)}
+              onClick={getConfirmation(
+                "Are you sure you want to delete this task?",
+                () => deleteTask(task.id)
+              )}
               variants={iconVariants}
               whileHover="hover"
               whileTap="tap"

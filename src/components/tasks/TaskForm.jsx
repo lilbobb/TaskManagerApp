@@ -1,47 +1,51 @@
-import React from 'react';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiPlus } from 'react-icons/fi'; 
+import React, { useRef } from "react";
+import { motion } from "framer-motion";
+import { FiPlus } from "react-icons/fi";
+import { useTasks } from "../../context/TaskContext";
 
 const formVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.3 }
-  }
+    transition: { duration: 0.3 },
+  },
 };
 
 const inputVariants = {
   focus: { scale: 1.01 },
-  tap: { scale: 0.99 }
+  tap: { scale: 0.99 },
 };
 
-function TaskForm({ addTask }) {
-  const [input, setInput] = useState('');
+function TaskForm() {
+  const [input, setInput] = React.useState("");
+  const { addTask } = useTasks();
+  const inputRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.trim()) {
       addTask(input);
-      setInput('');
+      setInput("");
+      inputRef.current?.focus();
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={formVariants}
       className="fixed lg:static bottom-0 left-0 right-0 z-10"
     >
       <div className="max-w-7xl mx-auto px-4 lg:px-6">
-        <form 
-          onSubmit={handleSubmit} 
+        <form
+          onSubmit={handleSubmit}
           className="flex items-center gap-2 w-full bg-gray-100 dark:bg-gray-900 lg:bg-transparent lg:dark:bg-transparent lg:w-auto p-4 lg:p-0 lg:rounded-none rounded-t-lg shadow-lg lg:shadow-none transition-colors duration-300"
         >
           <div className="flex-1">
             <motion.input
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
