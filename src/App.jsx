@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { FiCheckSquare } from "react-icons/fi";
+import { FiCheckSquare, FiPlus } from "react-icons/fi";
 import TaskList from "./components/tasks/TaskList";
 import TaskForm from "./components/tasks/TaskForm";
 import FilterButtons from "./components/ui/FilterButtons";
 import ThemeToggle from "./components/ui/ThemeToggle";
 import { TaskProvider } from "./context/TaskContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { motion } from "framer-motion";
 import "./index.css";
 
 function App() {
@@ -24,7 +25,18 @@ function App() {
                     Task Manager
                   </h1>
                 </div>
-                <ThemeToggle />
+                <div className="flex items-center space-x-4">
+                  <motion.button
+                    onClick={() => setShowTaskForm(true)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
+                    aria-label="Add new task"
+                  >
+                    <FiPlus size={20} />
+                  </motion.button>
+                  <ThemeToggle />
+                </div>
               </div>
 
               <div className="lg:hidden sticky top-20 z-10 bg-gray-100 dark:bg-gray-900 pb-2 -mx-6 px-6">
@@ -35,9 +47,6 @@ function App() {
             <div className="hidden lg:flex lg:flex-row gap-6">
               <div className="lg:w-1/4 sticky top-28 h-[calc(100vh-9rem)]">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md h-full overflow-y-auto transition-colors duration-300">
-                  {showTaskForm ? (
-                    <TaskForm onTaskAdded={() => setShowTaskForm(true)} />
-                  ) : null}
                   <FilterButtons />
                 </div>
               </div>
@@ -58,12 +67,13 @@ function App() {
                   />
                 </div>
               </div>
-              {showTaskForm && (
-                <div className="sticky bottom-0 p-4 bg-transparent">
-                  <TaskForm onTaskAdded={() => setShowTaskForm(true)} />
-                </div>
-              )}
             </div>
+
+            <TaskForm
+              isOpen={showTaskForm}
+              onClose={() => setShowTaskForm(false)}
+              onTaskAdded={() => setShowTaskForm(false)}
+            />
           </div>
         </div>
       </TaskProvider>

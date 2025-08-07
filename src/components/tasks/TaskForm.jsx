@@ -1,15 +1,17 @@
-import React, { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { FiSend } from "react-icons/fi";
+import React, { useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiSend, FiX } from "react-icons/fi";
 import { useTasks } from "../../context/TaskContext";
 
-const formVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.3 },
-  },
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
+};
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 0.5, transition: { duration: 0.3 } },
 };
 
 const inputVariants = {
@@ -17,17 +19,17 @@ const inputVariants = {
   tap: { scale: 0.99 },
 };
 
-function TaskForm({ onTaskAdded }) {
-  const [input, setInput] = useState("");
-  const [dueDate, setDueDate] = useState("");
+function TaskForm({ isOpen, onClose, onTaskAdded }) {
+  const [input, setInput] = React.useState("");
+  const [dueDate, setDueDate] = React.useState("");
   const { addTask } = useTasks();
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,55 +37,79 @@ function TaskForm({ onTaskAdded }) {
       addTask(input, dueDate || null);
       setInput("");
       setDueDate("");
-      inputRef.current?.focus();
+      onClose(); // Close modal after submission
       if (onTaskAdded) onTaskAdded();
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={formVariants}
-      className="fixed lg:static bottom-0 left-0 right-0 z-10"
-    >
-      <div className="max-w-7xl mx-auto px-4 lg:px-6">
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-2 w-full bg-gray-100 dark:bg-gray-900 lg:bg-transparent lg:dark:bg-transparent lg:w-auto p-4 lg:p-0 lg:rounded-none rounded-t-lg shadow-lg lg:shadow-none transition-colors duration-300"
-        >
-          <div className="flex gap-2">
-            <motion.input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Add a new task"
-              variants={inputVariants}
-              whileFocus="focus"
-              whileTap="tap"
-              className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
-            />
+    <AnimatePresence>
+      <motion.div
+        variants={backdropVariants}
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        className="fixed inset-0 bg-black z-40"
+        onClick={onClose}
+      />
+      <motion.div
+        variants={modalVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md"
+      >
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Add New Task
+            </h2>
             <motion.button
-              type="submit"
+              onClick={onClose}
               whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
-              aria-label="Add task"
+              whileTap={{ scale: 0.9 }}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
+              aria-label="Close modal"
             >
-              <FiSend size={20} />
+              <FiX size={20} />
             </motion.button>
           </div>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
-            min={new Date().toISOString().split("T")[0]}
-          />
-        </form>
-      </div>
-    </motion.div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <motion.input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Add a new task"
+                variants={inputVariants}
+                whileFocus="focus"
+                whileTap="tap"
+                className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+              />
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
+                aria-label="Add task"
+              >
+                <FiSend size={20} />
+              </motion.button>
+            </div>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+              min={new Date().toISOString().split("T")[0]}
+            />
+          </form>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
