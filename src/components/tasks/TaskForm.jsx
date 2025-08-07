@@ -102,6 +102,7 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
             <input
               type="date"
               value={dueDate}
+              placeholder="Add task Due Date"
               onChange={(e) => setDueDate(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
               min={new Date().toISOString().split("T")[0]}
