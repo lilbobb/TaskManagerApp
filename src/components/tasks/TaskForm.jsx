@@ -33,6 +33,12 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isDateFocused && dateInputRef.current) {
+      dateInputRef.current.focus();
+    }
+  }, [isDateFocused]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.trim()) {
@@ -43,6 +49,10 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
       onClose();
       if (onTaskAdded) onTaskAdded();
     }
+  };
+
+  const handleDateFocus = () => {
+    setIsDateFocused(true);
   };
 
   if (!isOpen) return null;
@@ -79,42 +89,60 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
               <FiX size={20} />
             </motion.button>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-            <div className="flex gap-2">
-              <motion.input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Add a new task"
-                variants={inputVariants}
-                whileFocus="focus"
-                whileTap="tap"
-                className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
-              />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
-                aria-label="Add task"
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="task-input"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                <FiSend size={20} />
-              </motion.button>
+                Task
+              </label>
+              <div className="flex gap-2">
+                <motion.input
+                  id="task-input"
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Add a new task"
+                  variants={inputVariants}
+                  whileFocus="focus"
+                  whileTap="tap"
+                  className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+                />
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
+                  aria-label="Add task"
+                >
+                  <FiSend size={20} />
+                </motion.button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <input
-                ref={dateInputRef}
-                type={isDateFocused || dueDate ? "date" : "text"}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                onFocus={() => setIsDateFocused(true)}
-                onBlur={() => setIsDateFocused(!!dueDate)}
-                placeholder="Add task due date"
-                className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
-                min={new Date().toISOString().split("T")[0]}
-              />
-              <div className="w-10 h-10"></div> 
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="due-date-input"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Due Date
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="due-date-input"
+                  ref={dateInputRef}
+                  type={isDateFocused || dueDate ? "date" : "text"}
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  onFocus={handleDateFocus}
+                  onBlur={() => setIsDateFocused(!!dueDate)}
+                  placeholder="Add task due date"
+                  className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+                <div className="w-10 h-10"></div>
+              </div>
             </div>
           </form>
         </div>
