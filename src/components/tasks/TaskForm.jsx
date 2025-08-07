@@ -22,7 +22,7 @@ const inputVariants = {
 function TaskForm({ isOpen, onClose, onTaskAdded }) {
   const [input, setInput] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [isDateFocused, setIsDateFocused] = useState(false); 
+  const [isDateFocused, setIsDateFocused] = useState(false);
   const { addTask } = useTasks();
   const inputRef = useRef(null);
   const dateInputRef = useRef(null);
@@ -62,7 +62,7 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm sm:max-w-md"
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-4">
@@ -102,17 +102,20 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
                 <FiSend size={20} />
               </motion.button>
             </div>
-            <input
-              ref={dateInputRef}
-              type={isDateFocused || dueDate ? "date" : "text"}
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              onFocus={() => setIsDateFocused(true)}
-              onBlur={() => setIsDateFocused(!!dueDate)}
-              placeholder="Add task due date"
-              className="flex-1 md:w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
-              min={new Date().toISOString().split("T")[0]}
-            />
+            <div className="flex gap-2">
+              <input
+                ref={dateInputRef}
+                type={isDateFocused || dueDate ? "date" : "text"}
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                onFocus={() => setIsDateFocused(true)}
+                onBlur={() => setIsDateFocused(!!dueDate)}
+                placeholder="Add task due date"
+                className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+                min={new Date().toISOString().split("T")[0]}
+              />
+              <div className="w-10 h-10"></div> 
+            </div>
           </form>
         </div>
       </motion.div>
