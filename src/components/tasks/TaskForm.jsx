@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiSend, FiX } from "react-icons/fi";
 import { useTasks } from "../../context/TaskContext";
@@ -20,10 +20,12 @@ const inputVariants = {
 };
 
 function TaskForm({ isOpen, onClose, onTaskAdded }) {
-  const [input, setInput] = React.useState("");
-  const [dueDate, setDueDate] = React.useState("");
+  const [input, setInput] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [isDateFocused, setIsDateFocused] = useState(false); 
   const { addTask } = useTasks();
   const inputRef = useRef(null);
+  const dateInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -37,7 +39,8 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
       addTask(input, dueDate || null);
       setInput("");
       setDueDate("");
-      onClose(); // Close modal after submission
+      setIsDateFocused(false);
+      onClose();
       if (onTaskAdded) onTaskAdded();
     }
   };
@@ -59,7 +62,7 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-4">
@@ -100,11 +103,14 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
               </motion.button>
             </div>
             <input
-              type="date"
+              ref={dateInputRef}
+              type={isDateFocused || dueDate ? "date" : "text"}
               value={dueDate}
-              placeholder="Add task Due Date"
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
+              onFocus={() => setIsDateFocused(true)}
+              onBlur={() => setIsDateFocused(!!dueDate)}
+              placeholder="Add task due date"
+              className="flex-1 md:w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
               min={new Date().toISOString().split("T")[0]}
             />
           </form>
