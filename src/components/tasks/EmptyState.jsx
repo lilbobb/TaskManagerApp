@@ -20,7 +20,7 @@ const EmptyState = ({ onAddClick }) => {
         No tasks yet
       </h3>
       <p className="text-gray-400 dark:text-gray-500 mb-6 text-center max-w-md">
-        Click the button below to add your first task
+        Click the button below to add new task
       </p>
       <motion.button
         onClick={onAddClick}

@@ -1,81 +1,95 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { loadFromLocalStorage, saveToLocalStorage } from "../utils/localStorage";
 
 const TaskContext = createContext();
 
 export const TaskProvider = ({ children }) => {
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
+  const [tasks, setTasks] = useState(() => loadFromLocalStorage("tasks", []));
   const [filter, setFilter] = useState("all");
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    saveToLocalStorage("tasks", tasks);
   }, [tasks]);
 
-  const addTask = (text, dueDate = null) => { 
-    if (!text) return; 
-    const newTask = {
-      id: crypto.randomUUID(),
-      text,
-      completed: false,
-      dueDate, 
-    };
-    setTasks([...tasks, newTask]);
-  };
+  const addTask = useCallback((text, dueDate = null) => {
+    if (!text.trim()) return;
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        text: text.trim(),
+        completed: false,
+        dueDate,
+        createdAt: new Date().toISOString()
+      },
+    ]);
+  }, []);
 
-  const editTask = (id, newText, newDueDate = null) => {
-    setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, text: newText, dueDate: newDueDate } : task))
+  const editTask = useCallback((id, newText, newDueDate = null) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? { ...task, text: newText.trim(), dueDate: newDueDate }
+          : task
+      )
     );
     setEditingId(null);
     setEditText("");
-  };
+  }, []);
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+  const deleteTask = useCallback((id) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+  }, []);
 
-  const toggleTaskCompletion = (id) => {
-    setTasks(
-      tasks.map((task) =>
+  const toggleTaskCompletion = useCallback((id) => {
+    setTasks((prev) =>
+      prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
-  };
+  }, []);
 
-  const startEditing = (task) => {
+  const startEditing = useCallback((task) => {
     setEditingId(task.id);
     setEditText(task.text);
-  };
+  }, []);
 
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === "completed") return task.completed;
-    if (filter === "pending") return !task.completed;
-    return true;
-  });
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      if (filter === "completed") return task.completed;
+      if (filter === "pending") return !task.completed;
+      return true;
+    });
+  }, [tasks, filter]);
+
+  const value = useMemo(() => ({
+    tasks: filteredTasks,
+    allTasks: tasks,
+    filter,
+    editingId,
+    editText,
+    setEditText,
+    addTask,
+    editTask,
+    deleteTask,
+    toggleTaskCompletion,
+    startEditing,
+    setFilter,
+  }), [filteredTasks, tasks, filter, editingId, editText, addTask, editTask, deleteTask, toggleTaskCompletion, startEditing]);
 
   return (
-    <TaskContext.Provider
-      value={{
-        tasks: filteredTasks,
-        filter,
-        editingId,
-        editText,
-        setEditText,
-        addTask,
-        editTask,
-        deleteTask,
-        toggleTaskCompletion,
-        startEditing,
-        setFilter,
-      }}
-    >
+    <TaskContext.Provider value={value}>
       {children}
     </TaskContext.Provider>
   );
 };
 
-export const useTasks = () => useContext(TaskContext);
+export const useTasks = () => {
+  const context = useContext(TaskContext);
+  if (!context) {
+    throw new Error("useTasks must be used within a TaskProvider");
+  }
+  return context;
+};

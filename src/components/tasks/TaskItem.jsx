@@ -1,7 +1,8 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useRef, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiCalendar } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useTasks } from "../../context/TaskContext";
+import { formatDate, isOverdue } from "../../utils/helpers";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 
 const TaskItem = memo(({ task, isLoading }) => {
@@ -14,33 +15,28 @@ const TaskItem = memo(({ task, isLoading }) => {
     toggleTaskCompletion,
     deleteTask,
   } = useTasks();
+  
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editDueDate, setEditDueDate] = useState(task.dueDate || "");
-  const editInputRef = React.useRef(null);
+  const editInputRef = useRef(null);
 
   const iconVariants = {
     hover: { scale: 1.2 },
     tap: { scale: 0.9 },
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (editingId === task.id && editInputRef.current) {
       editInputRef.current.focus();
     }
   }, [editingId, task.id]);
 
-  const handleDeleteClick = () => {
-    setShowDeleteModal(true);
-  };
-
+  const handleDeleteClick = () => setShowDeleteModal(true);
   const handleConfirmDelete = () => {
     deleteTask(task.id);
     setShowDeleteModal(false);
   };
-
-  const handleCancelDelete = () => {
-    setShowDeleteModal(false);
-  };
+  const handleCancelDelete = () => setShowDeleteModal(false);
 
   if (isLoading) {
     return (
@@ -57,9 +53,6 @@ const TaskItem = memo(({ task, isLoading }) => {
   return (
     <>
       <motion.li
-        key={task.id}
-        role="listitem"
-        aria-labelledby={`task-${task.id}`}
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,11 +71,7 @@ const TaskItem = memo(({ task, isLoading }) => {
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  editTask(task.id, editText, editDueDate || null);
-                }
-              }}
+              onKeyDown={(e) => e.key === "Enter" && editTask(task.id, editText, editDueDate || null)}
               className="p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
             />
             <input
@@ -94,7 +83,7 @@ const TaskItem = memo(({ task, isLoading }) => {
             />
             <button
               onClick={() => editTask(task.id, editText, editDueDate || null)}
-              className="w-1/3 self-start px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm cursor-pointer"
+              className="w-1/3 self-start px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 text-sm"
             >
               Save
             </button>
@@ -103,35 +92,19 @@ const TaskItem = memo(({ task, isLoading }) => {
           <div className="flex flex-col h-full">
             <div className="flex items-start space-x-4">
               <motion.input
-                aria-label={
-                  task.completed ? "Mark task incomplete" : "Mark task complete"
-                }
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => toggleTaskCompletion(task.id)}
                 whileTap={{ scale: 0.9 }}
                 className="h-5 w-5 text-green-500 rounded focus:ring-green-500 dark:focus:ring-green-600 mt-1 flex-shrink-0 cursor-pointer"
               />
-              <span
-                id={`task-${task.id}`}
-                className={`text-lg ${
-                  task.completed
-                    ? "line-through text-gray-500 dark:text-gray-400"
-                    : ""
-                }`}
-              >
+              <span className={`text-lg ${task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""}`}>
                 {task.text}
                 {task.dueDate && (
-                  <span
-                    className={`block text-sm mt-1 ${
-                      new Date(task.dueDate) < new Date() && !task.completed
-                        ? "text-red-500 dark:text-red-400"
-                        : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  >
+                  <span className={`block text-sm mt-1 ${isOverdue(task.dueDate, task.completed) ? "text-red-500 dark:text-red-400" : "text-gray-500 dark:text-gray-400"}`}>
                     <FiCalendar className="inline mr-1" />
-                    {new Date(task.dueDate).toLocaleDateString()}
-                    {new Date(task.dueDate) < new Date() && !task.completed && (
+                    {formatDate(task.dueDate)}
+                    {isOverdue(task.dueDate, task.completed) && (
                       <span className="ml-1 text-xs">(Overdue)</span>
                     )}
                   </span>
@@ -144,8 +117,7 @@ const TaskItem = memo(({ task, isLoading }) => {
                 variants={iconVariants}
                 whileHover="hover"
                 whileTap="tap"
-                className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200 cursor-pointer"
-                aria-label="Edit task"
+                className="p-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-200"
               >
                 <FiEdit2 size={18} />
               </motion.button>
@@ -154,8 +126,7 @@ const TaskItem = memo(({ task, isLoading }) => {
                 variants={iconVariants}
                 whileHover="hover"
                 whileTap="tap"
-                className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200 cursor-pointer"
-                aria-label="Delete task"
+                className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
               >
                 <FiTrash2 size={18} />
               </motion.button>

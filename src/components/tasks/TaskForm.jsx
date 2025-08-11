@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiSend, FiX } from "react-icons/fi";
 import { useTasks } from "../../context/TaskContext";
+import { useModal } from "../../utils/hooks";
 
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -24,13 +25,15 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
   const [dueDate, setDueDate] = useState("");
   const [isDateFocused, setIsDateFocused] = useState(false);
   const { addTask } = useTasks();
+
+  const modalRef = useRef(null);
   const inputRef = useRef(null);
   const dateInputRef = useRef(null);
 
+  useModal(isOpen, onClose, modalRef);
+
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
   useEffect(() => {
@@ -51,10 +54,6 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
     }
   };
 
-  const handleDateFocus = () => {
-    setIsDateFocused(true);
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -68,6 +67,7 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
         onClick={onClose}
       />
       <motion.div
+        ref={modalRef}
         variants={modalVariants}
         initial="hidden"
         animate="visible"
@@ -84,22 +84,17 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
-              aria-label="Close modal"
             >
               <FiX size={20} />
             </motion.button>
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <label
-                htmlFor="task-input"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Task
               </label>
               <div className="flex gap-2">
                 <motion.input
-                  id="task-input"
                   ref={inputRef}
                   type="text"
                   value={input}
@@ -114,34 +109,28 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
                   type="submit"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
-                  aria-label="Add task"
+                  className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center justify-center"
                 >
                   <FiSend size={20} />
                 </motion.button>
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <label
-                htmlFor="due-date-input"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Due Date
               </label>
               <div className="flex gap-2">
                 <input
-                  id="due-date-input"
                   ref={dateInputRef}
                   type={isDateFocused || dueDate ? "date" : "text"}
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  onFocus={handleDateFocus}
+                  onFocus={() => setIsDateFocused(true)}
                   onBlur={() => setIsDateFocused(!!dueDate)}
                   placeholder="Add task due date"
                   className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
                   min={new Date().toISOString().split("T")[0]}
                 />
-                <div className="w-10 h-10"></div>
               </div>
             </div>
           </form>

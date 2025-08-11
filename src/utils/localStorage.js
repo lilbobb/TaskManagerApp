@@ -15,3 +15,11 @@ export const saveToLocalStorage = (key, value) => {
     console.error("Error saving to localStorage:", error);
   }
 };
+
+export const clearLocalStorage = (key) => {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.error("Error clearing localStorage:", error);
+  }
+};
