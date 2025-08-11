@@ -23,7 +23,6 @@ const inputVariants = {
 function TaskForm({ isOpen, onClose, onTaskAdded }) {
   const [input, setInput] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [isDateFocused, setIsDateFocused] = useState(false);
   const { addTask } = useTasks();
 
   const modalRef = useRef(null);
@@ -36,19 +35,12 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isDateFocused && dateInputRef.current) {
-      dateInputRef.current.focus();
-    }
-  }, [isDateFocused]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.trim()) {
       addTask(input, dueDate || null);
       setInput("");
       setDueDate("");
-      setIsDateFocused(false);
       onClose();
       if (onTaskAdded) onTaskAdded();
     }
@@ -121,13 +113,12 @@ function TaskForm({ isOpen, onClose, onTaskAdded }) {
               </label>
               <div className="flex gap-2">
                 <input
+                id="due-date-input"
                   ref={dateInputRef}
-                  type={isDateFocused || dueDate ? "date" : "text"}
+                  type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  onFocus={() => setIsDateFocused(true)}
-                  onBlur={() => setIsDateFocused(!!dueDate)}
-                  placeholder="Add task due date"
+                  onFocus={(e) => e.target.showPicker()}
                   className="flex-1 p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-600 transition-colors duration-200"
                   min={new Date().toISOString().split("T")[0]}
                 />
